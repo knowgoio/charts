@@ -20,6 +20,8 @@ spec:
       labels:
         io.kompose.service: knowgo-score
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - args:
         - --consul-agent

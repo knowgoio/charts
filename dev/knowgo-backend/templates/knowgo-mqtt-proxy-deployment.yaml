@@ -20,6 +20,8 @@ spec:
       labels:
         io.kompose.service: knowgo-mqtt-proxy
     spec:
+      imagePullSecrets:
+      - name: regcred
       containers:
       - env:
         - name: MQTT_PROXY_ADDRESS
