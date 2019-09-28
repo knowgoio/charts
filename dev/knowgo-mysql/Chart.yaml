@@ -1,0 +1,12 @@
+apiVersion: v1
+name: knowgo-mysql
+description: A Helm Chart for deploying KnowGo MySQL database instance
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - mysql
+  - knowgo
+sources:
+  - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs
