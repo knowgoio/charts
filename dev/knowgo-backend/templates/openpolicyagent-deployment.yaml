@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: openpolicyagent
+  name: openpolicyagent
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: openpolicyagent
+    spec:
+      containers:
+      - args:
+        - run
+        - --server
+        env:
+        - name: SERVICE_NAME
+          value: opa
+        image: openpolicyagent/opa
+        name: openpolicyagent
+        ports:
+        - containerPort: 8181
+        resources: {}
+      restartPolicy: Always
+status: {}

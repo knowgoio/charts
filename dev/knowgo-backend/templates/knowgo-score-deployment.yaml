@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: knowgo-score
+  name: knowgo-score
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: knowgo-score
+    spec:
+      containers:
+      - args:
+        - --consul-agent
+        - consul:8500
+        env:
+        - name: SERVICE_IGNORE
+          value: '"ignore"'
+        image: adaptant/knowgo-score:latest
+        name: knowgo-score
+        ports:
+        - containerPort: 5000
+        resources: {}
+      restartPolicy: Always
+status: {}

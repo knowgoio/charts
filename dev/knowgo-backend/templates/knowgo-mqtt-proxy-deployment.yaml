@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: knowgo-mqtt-proxy
+  name: knowgo-mqtt-proxy
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: knowgo-mqtt-proxy
+    spec:
+      containers:
+      - env:
+        - name: MQTT_PROXY_ADDRESS
+          value: mqtt-broker
+        - name: MQTT_PROXY_PORT
+          value: "1884"
+        - name: SERVICE_NAME
+          value: knowgo-mqtt-proxy
+        image: adaptant/knowgo-mqtt-proxy:latest
+        name: knowgo-mqtt-proxy
+        ports:
+        - containerPort: 1883
+        resources: {}
+      restartPolicy: Always
+status: {}

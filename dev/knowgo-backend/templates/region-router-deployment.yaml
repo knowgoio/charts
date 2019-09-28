@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: region-router
+  name: region-router
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: region-router
+    spec:
+      containers:
+      - args:
+        - --consul-agent
+        - consul:8500
+        env:
+        - name: SERVICE_IGNORE
+          value: '"ignore"'
+        image: adaptant/go-region-router:latest
+        name: region-router
+        ports:
+        - containerPort: 7000
+        resources: {}
+      restartPolicy: Always
+status: {}

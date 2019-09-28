@@ -1,0 +1,7 @@
+name: knowgo-backend
+description: A Helm Chart for deploying the KnowGo platform backend
+version: 0.0.1
+keywords:
+  - knowgo-backend
+sources:
+home:

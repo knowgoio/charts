@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: registrator
+  name: registrator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: registrator
+    spec:
+      containers:
+      - args:
+        - consul://consul:8500
+        image: adaptant/registrator:latest
+        name: registrator
+        resources: {}
+        volumeMounts:
+        - mountPath: /tmp/docker.sock
+          name: registrator-claim0
+      restartPolicy: Always
+      volumes:
+      - name: registrator-claim0
+        persistentVolumeClaim:
+          claimName: registrator-claim0
+status: {}

@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: knowgo-service-registry
+  name: knowgo-service-registry
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: knowgo-service-registry
+    spec:
+      containers:
+      - args:
+        - --consul-agent
+        - consul:8500
+        env:
+        - name: SERVICE_IGNORE
+          value: ignore
+        - name: WAIT_AFTER_HOSTS
+          value: "5"
+        - name: WAIT_HOSTS
+          value: consul:8500, vin-decoder:8080, knowgo-score:5000, licenseplate-recognition:8888
+        - name: WAIT_HOSTS_TIMEOUT
+          value: "120"
+        - name: WAIT_SLEEP_INTERVAL
+          value: "5"
+        image: adaptant/knowgo-service-registry:latest
+        name: knowgo-service-registry
+        ports:
+        - containerPort: 3000
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: vin-decoder
+  name: vin-decoder
+spec:
+  ports:
+  - name: "4040"
+    port: 4040
+    targetPort: 8080
+  selector:
+    io.kompose.service: vin-decoder
+status:
+  loadBalancer: {}

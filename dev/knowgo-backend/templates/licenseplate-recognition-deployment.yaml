@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: licenseplate-recognition
+  name: licenseplate-recognition
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.18.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: licenseplate-recognition
+    spec:
+      containers:
+      - args:
+        - --consul-agent
+        - consul:8500
+        env:
+        - name: SERVICE_IGNORE
+          value: '"ignore"'
+        image: adaptant/licenseplate-recognition-service:latest
+        name: licenseplate-recognition
+        ports:
+        - containerPort: 8888
+        resources: {}
+      restartPolicy: Always
+status: {}
