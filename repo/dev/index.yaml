@@ -3,9 +3,9 @@ entries:
   knowgo-backend:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2019-09-28T23:39:06.537322086+02:00"
+    created: "2019-09-30T07:20:05.06663487Z"
     description: A Helm Chart for deploying the KnowGo platform backend
-    digest: 5ebbe34b71742591c8a06fcc2c5b065e999fdab80e788b4e557032060ced87ef
+    digest: 4b5e01bc93e03d879a06626c6ea2406ad4384a65f5d8f6d24375289953eee8bd
     keywords:
     - backend
     - knowgo
@@ -20,9 +20,9 @@ entries:
   knowgo-mysql:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2019-09-28T23:39:06.537465226+02:00"
+    created: "2019-09-30T07:20:05.067080698Z"
     description: A Helm Chart for deploying KnowGo MySQL database instance
-    digest: 456badf474c8baaf92551e952c17d43956a6778c8e61feafc0c3c16ffd00fa1b
+    digest: f5a86fbf23f62c23d96ffa36035f62bca925180aebf4c71719f07a578490b01e
     keywords:
     - mysql
     - knowgo
@@ -34,4 +34,4 @@ entries:
     urls:
     - knowgo-mysql-0.0.1.tgz
     version: 0.0.1
-generated: "2019-09-28T23:39:06.536862572+02:00"
+generated: "2019-09-30T07:20:05.065384564Z"
