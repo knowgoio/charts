@@ -10,6 +10,9 @@ metadata:
   name: knowgo-score
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: knowgo-score
   strategy: {}
   template:
     metadata:
