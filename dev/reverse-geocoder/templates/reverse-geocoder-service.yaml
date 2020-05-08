@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: reverse-geocoder-service
+spec:
+  selector:
+    app: reverse-geocoder
+  ports:
+  - protocol: TCP
+    port: 4041
+    targetPort: 4041

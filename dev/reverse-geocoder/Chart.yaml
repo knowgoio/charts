@@ -1,0 +1,12 @@
+apiVersion: v1
+name: reverse-geocoder
+description: A Helm Chart for deploying the reverse geocoder
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - geocoding
+  - knowgo
+sources:
+  - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs

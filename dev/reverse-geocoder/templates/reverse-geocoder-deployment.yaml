@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: reverse-geocoder
+  name: reverse-geocoder-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reverse-geocoder
+  template:
+    metadata:
+      labels:
+        app: reverse-geocoder
+    spec:
+      containers:
+      - name: reverse-geocoder
+        image: adaptant/reverse-geocoding-service
+        args: [ "--use-consul=false" ]
+        ports:
+        - containerPort: 4041
+      restartPolicy: Always
