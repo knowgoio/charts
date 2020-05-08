@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: vin-decoder-service
+spec:
+  selector:
+    app: vin-decoder
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

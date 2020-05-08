@@ -1,0 +1,12 @@
+apiVersion: v1
+name: vin-decoder
+description: A Helm Chart for deploying the VIN decoder
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - vin
+  - knowgo
+sources:
+  - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs

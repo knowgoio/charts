@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vin-decoder
+  name: vin-decoder-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vin-decoder
+  template:
+    metadata:
+      labels:
+        app: vin-decoder
+    spec:
+      containers:
+      - name: vin-decoder
+        image: adaptant/vin-decoder-service
+        args: [ "--no-use-consul" ]
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
