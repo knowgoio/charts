@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: opa-service
+spec:
+  selector:
+    app: opa
+  ports:
+  - protocol: TCP
+    port: 8181
+    targetPort: 8181

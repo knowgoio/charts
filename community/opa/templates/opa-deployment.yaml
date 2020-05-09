@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: opa
+  name: opa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+    spec:
+      containers:
+      - name: opa
+        image: openpolicyagent/opa
+        args:
+        - "run"
+        - "--ignore=.*" # exclude hidden dirs created by Kubernetes
+        - "--server"
+        ports:
+        - containerPort: 8181
+      restartPolicy: Always
