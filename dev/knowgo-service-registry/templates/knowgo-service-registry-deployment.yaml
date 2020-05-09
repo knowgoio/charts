@@ -19,7 +19,9 @@ spec:
       containers:
       - name: knowgo-service-registry
         image: adaptant/knowgo-service-registry
-        args: [ "--k8s" ]
+        args:
+        - "--consul-agent hashicorp-consul-server:8500"
+        - "--k8s"
         ports:
         - containerPort: 3000
         imagePullPolicy: Always
