@@ -6,8 +6,11 @@ appVersion: 0.0.1
 keywords:
   - score
   - knowgo
-sources:
-  - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+dependencies:
+  - name: knowgo-mysql
+    version: 0.0.2
+    enabled: true
+    repository: https://raw.githubusercontent.com/knowgoio/knowgo-helm-charts/master/repo/dev
 maintainers:
   - name: Adaptant Labs
     email: labs@adaptant.io

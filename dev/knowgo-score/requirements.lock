@@ -1,0 +1,6 @@
+dependencies:
+- name: knowgo-mysql
+  repository: https://raw.githubusercontent.com/knowgoio/knowgo-helm-charts/master/repo/dev
+  version: 0.0.2
+digest: sha256:3ea246695b0b9219141198524a8b5cfdda4e00535a2da4df041821e199280bde
+generated: "2020-05-09T14:36:31.219736464+02:00"
