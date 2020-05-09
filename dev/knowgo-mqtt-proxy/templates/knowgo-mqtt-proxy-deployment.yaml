@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: knowgo-mqtt-proxy
+  name: knowgo-mqtt-proxy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knowgo-mqtt-proxy
+  template:
+    metadata:
+      labels:
+        app: knowgo-mqtt-proxy
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: knowgo-mqtt
+        image: eclipse-mosquitto
+        ports:
+        - containerPort: 1883
+        imagePullPolicy: Always
+      restartPolicy: Always

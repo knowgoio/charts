@@ -1,0 +1,14 @@
+apiVersion: v1
+name: knowgo-mqtt-proxy
+description: Official KnowGo MQTT Proxy and Broker
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - mqtt
+  - proxy
+  - broker
+  - knowgo
+sources:
+  - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs

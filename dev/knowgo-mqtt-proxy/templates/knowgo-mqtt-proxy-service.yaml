@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: knowgo-mqtt-proxy-service
+spec:
+  selector:
+    app: knowgo-mqtt-proxy
+  ports:
+  - protocol: TCP
+    port: 1883
+    targetPort: 1883

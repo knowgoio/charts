@@ -3,7 +3,7 @@ entries:
   knowgo-backend:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.39547967+02:00"
+    created: "2020-05-09T10:30:23.612535916+02:00"
     description: A Helm Chart for deploying the KnowGo platform backend
     digest: 939584ac99b795cdbd73399ca747c8b1209abe27ce829dad870e41ec2192718a
     keywords:
@@ -17,10 +17,29 @@ entries:
     urls:
     - knowgo-backend-0.0.1.tgz
     version: 0.0.1
+  knowgo-mqtt-proxy:
+  - apiVersion: v1
+    appVersion: 0.0.1
+    created: "2020-05-09T10:30:23.612730939+02:00"
+    description: Official KnowGo MQTT Proxy and Broker
+    digest: a2d7642092e6059a8915dac524a806c0157f476f072c401acfad0ebb34121a88
+    keywords:
+    - mqtt
+    - proxy
+    - broker
+    - knowgo
+    maintainers:
+    - name: Adaptant Labs
+    name: knowgo-mqtt-proxy
+    sources:
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+    urls:
+    - knowgo-mqtt-proxy-0.0.1.tgz
+    version: 0.0.1
   knowgo-mysql:
   - apiVersion: v1
     appVersion: 0.0.2
-    created: "2020-05-09T10:09:49.395846308+02:00"
+    created: "2020-05-09T10:30:23.613031461+02:00"
     description: A Helm Chart for deploying KnowGo MySQL database instance
     digest: 8202666f4cdeb6b2908c43bf9a7968fb3b5b457848b0f2c18ae6fec07cedefe4
     keywords:
@@ -36,7 +55,7 @@ entries:
     version: 0.0.2
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.395656307+02:00"
+    created: "2020-05-09T10:30:23.612873077+02:00"
     description: A Helm Chart for deploying KnowGo MySQL database instance
     digest: daa102078da0eb1859ed91748483da8c46b6228288108ccd8dd9d9e44428f78a
     keywords:
@@ -53,7 +72,7 @@ entries:
   knowgo-service-registry:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.396198906+02:00"
+    created: "2020-05-09T10:30:23.613203422+02:00"
     description: Official KnowGo Service Registry Chart
     digest: ca473f4e2544d26c872c5db3d65dd57da7ae904862978abed2e87b8e71dca4bd
     keywords:
@@ -70,7 +89,7 @@ entries:
   licenseplate-recognition:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.396661589+02:00"
+    created: "2020-05-09T10:30:23.613355341+02:00"
     description: A Helm Chart for deploying the licenseplate recognition microservice
     digest: f2b41761b75748207026c9a4943fc878a7ab0b0cf42689a6139bc100218e8c97
     keywords:
@@ -87,7 +106,7 @@ entries:
   reverse-geocoder:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.397045752+02:00"
+    created: "2020-05-09T10:30:23.613889865+02:00"
     description: A Helm Chart for deploying the reverse geocoder
     digest: 9bdc7ba0aa678860f9d3962d5e5beecde51e92ea009024f7eb80cfb272d4ffb4
     keywords:
@@ -104,7 +123,7 @@ entries:
   vin-decoder:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T10:09:49.397231964+02:00"
+    created: "2020-05-09T10:30:23.614329303+02:00"
     description: A Helm Chart for deploying the VIN decoder
     digest: f947e0f18a6b753d68943b74b7dd6e55172f3289414b19ecdf04bc601762d7aa
     keywords:
@@ -118,4 +137,4 @@ entries:
     urls:
     - vin-decoder-0.0.1.tgz
     version: 0.0.1
-generated: "2020-05-09T10:09:49.394956529+02:00"
+generated: "2020-05-09T10:30:23.611944801+02:00"
