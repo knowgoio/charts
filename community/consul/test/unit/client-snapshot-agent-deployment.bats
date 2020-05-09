@@ -92,7 +92,7 @@ load _helpers
 }
 
 #--------------------------------------------------------------------
-# global.bootstrapACLs and snapshotAgent.configSecret
+# global.acls.manageSystemACLs and snapshotAgent.configSecret
 
 @test "client/SnapshotAgentDeployment: no initContainer by default" {
   cd `chart_dir`
@@ -104,12 +104,12 @@ load _helpers
   [ "${actual}" = "null" ]
 }
 
-@test "client/SnapshotAgentDeployment: populates initContainer when global.bootstrapACLs=true" {
+@test "client/SnapshotAgentDeployment: populates initContainer when global.acls.manageSystemACLs=true" {
   cd `chart_dir`
   local actual=$(helm template \
       -x templates/client-snapshot-agent-deployment.yaml  \
       --set 'client.snapshotAgent.enabled=true' \
-      --set 'global.bootstrapACLs=true' \
+      --set 'global.acls.manageSystemACLs=true' \
       . | tee /dev/stderr |
       yq '.spec.template.spec.initContainers | length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
@@ -125,12 +125,12 @@ load _helpers
   [ "${actual}" = "null" ]
 }
 
-@test "client/SnapshotAgentDeployment: populates volumes when global.bootstrapACLs=true" {
+@test "client/SnapshotAgentDeployment: populates volumes when global.acls.manageSystemACLs=true" {
   cd `chart_dir`
   local actual=$(helm template \
       -x templates/client-snapshot-agent-deployment.yaml  \
       --set 'client.snapshotAgent.enabled=true' \
-      --set 'global.bootstrapACLs=true' \
+      --set 'global.acls.manageSystemACLs=true' \
       . | tee /dev/stderr |
       yq '.spec.template.spec.volumes | length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
@@ -158,12 +158,12 @@ load _helpers
   [ "${actual}" = "null" ]
 }
 
-@test "client/SnapshotAgentDeployment: populates container volumeMounts when global.bootstrapACLs=true" {
+@test "client/SnapshotAgentDeployment: populates container volumeMounts when global.acls.manageSystemACLs=true" {
   cd `chart_dir`
   local actual=$(helm template \
       -x templates/client-snapshot-agent-deployment.yaml  \
       --set 'client.snapshotAgent.enabled=true' \
-      --set 'global.bootstrapACLs=true' \
+      --set 'global.acls.manageSystemACLs=true' \
       . | tee /dev/stderr |
       yq '.spec.template.spec.containers[0].volumeMounts | length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
@@ -203,4 +203,135 @@ load _helpers
       . | tee /dev/stderr |
       yq '.spec.template.spec.nodeSelector | contains("allow")' | tee /dev/stderr)
   [ "${actual}" = "true" ]
+}
+
+#--------------------------------------------------------------------
+# global.tls.enabled
+
+@test "client/SnapshotAgentDeployment: sets TLS env vars when global.tls.enabled" {
+  cd `chart_dir`
+  local env=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq -r '.spec.template.spec.containers[0].env[]' | tee /dev/stderr)
+
+  local actual
+  actual=$(echo $env | jq -r '. | select(.name == "CONSUL_HTTP_ADDR") | .value' | tee /dev/stderr)
+  [ "${actual}" = 'https://$(HOST_IP):8501' ]
+
+  actual=$(echo $env | jq -r '. | select(.name == "CONSUL_CACERT") | .value' | tee /dev/stderr)
+  [ "${actual}" = "/consul/tls/ca/tls.crt" ]
+}
+
+@test "client/SnapshotAgentDeployment: populates volumes when global.tls.enabled is true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes | length > 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: populates container volumeMounts when global.tls.enabled is true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].volumeMounts | length > 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: can overwrite CA with the provided secret" {
+  cd `chart_dir`
+  local ca_cert_volume=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.caCert.secretName=foo-ca-cert' \
+      --set 'global.tls.caCert.secretKey=key' \
+      --set 'global.tls.caKey.secretName=foo-ca-key' \
+      --set 'global.tls.caKey.secretKey=key' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name=="consul-ca-cert")' | tee /dev/stderr)
+
+  # check that the provided ca cert secret is attached as a volume
+  local actual
+  actual=$(echo $ca_cert_volume | jq -r '.secret.secretName' | tee /dev/stderr)
+  [ "${actual}" = "foo-ca-cert" ]
+
+  # check that it uses the provided secret key
+  actual=$(echo $ca_cert_volume | jq -r '.secret.items[0].key' | tee /dev/stderr)
+  [ "${actual}" = "key" ]
+}
+
+#--------------------------------------------------------------------
+# global.tls.enableAutoEncrypt
+
+@test "client/SnapshotAgentDeployment: consul-auto-encrypt-ca-cert volume is added when TLS with auto-encrypt is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.enableAutoEncrypt=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name == "consul-auto-encrypt-ca-cert") | length > 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: consul-auto-encrypt-ca-cert volumeMount is added when TLS with auto-encrypt is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.enableAutoEncrypt=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].volumeMounts[] | select(.name == "consul-auto-encrypt-ca-cert") | length > 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: get-auto-encrypt-client-ca init container is created when TLS with auto-encrypt is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.enableAutoEncrypt=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.initContainers[] | select(.name == "get-auto-encrypt-client-ca") | length > 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: adds both init containers when TLS with auto-encrypt and ACLs are enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.acls.manageSystemACLs=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.enableAutoEncrypt=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.initContainers | length == 2' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/SnapshotAgentDeployment: consul-ca-cert volume is not added if externalServers.enabled=true and externalServers.useSystemRoots=true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-snapshot-agent-deployment.yaml  \
+      --set 'client.snapshotAgent.enabled=true' \
+      --set 'global.tls.enabled=true' \
+      --set 'externalServers.enabled=true' \
+      --set 'externalServers.hosts[0]=foo.com' \
+      --set 'externalServers.useSystemRoots=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name == "consul-ca-cert")' | tee /dev/stderr)
+  [ "${actual}" = "" ]
 }
