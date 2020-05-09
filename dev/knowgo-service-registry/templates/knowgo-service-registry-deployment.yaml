@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: knowgo-service-registry
+  name: knowgo-service-registry-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knowgo-service-registry
+  template:
+    metadata:
+      labels:
+        app: knowgo-service-registry
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: knowgo-service-registry
+        image: adaptant/knowgo-service-registry
+        args: [ "--k8s" ]
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: Always
+      restartPolicy: Always

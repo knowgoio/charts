@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: knowgo-service-registry-service
+spec:
+  selector:
+    app: knowgo-service-registry
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

@@ -1,0 +1,12 @@
+apiVersion: v1
+name: knowgo-service-registry
+description: Official KnowGo Service Registry Chart
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - registry
+  - knowgo
+sources:
+  - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs
