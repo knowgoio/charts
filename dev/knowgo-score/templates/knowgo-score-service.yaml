@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: knowgo-score-service
+spec:
+  selector:
+    app: knowgo-score
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
