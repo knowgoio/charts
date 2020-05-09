@@ -1,0 +1,12 @@
+apiVersion: v1
+name: licenseplate-recognition
+description: A Helm Chart for deploying the licenseplate recognition microservice
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+  - alpr
+  - knowgo
+sources:
+  - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+maintainers:
+  - name: Adaptant Labs

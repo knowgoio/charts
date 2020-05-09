@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: licenseplate-recognition
+  name: licenseplate-recognition-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: licenseplate-recognition
+  template:
+    metadata:
+      labels:
+        app: licenseplate-recognition
+    spec:
+      containers:
+      - name: licenseplate-recognition
+        image: adaptant/licenseplate-recognition-service
+        args: [ "--use-consul=false" ]
+        ports:
+        - containerPort: 8888
+      restartPolicy: Always
