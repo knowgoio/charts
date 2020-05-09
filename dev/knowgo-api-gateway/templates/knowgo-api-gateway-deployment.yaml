@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: knowgo-api-gateway
+  name: knowgo-api-gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knowgo-api-gateway
+  template:
+    metadata:
+      labels:
+        app: knowgo-api-gateway
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: knowgo-api-gateway
+        image: adaptant/knowgo-api-gateway
+        args:
+        - "--dbserver knowgo-mysql-service"
+        - "--consul-agent hashicorp-consul-server:8500"
+        - "--k8s"
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+        imagePullPolicy: Always
+      restartPolicy: Always
