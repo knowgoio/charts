@@ -1,12 +1,14 @@
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to
-this (by the DNS naming spec). If release name contains chart name it will
-be used as a full name.
+this (by the DNS naming spec). Supports the legacy fullnameOverride setting
+as well as the global.name setting.
 */}}
 {{- define "consul.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else if .Values.global.name -}}
+{{- .Values.global.name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
@@ -58,4 +60,41 @@ Inject extra environment vars in the format key:value, if populated
   value: {{ $value | quote }}
 {{- end -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Get Consul client CA to use when auto-encrypt is enabled.
+This template is for an init container.
+*/}}
+{{- define "consul.getAutoEncryptClientCA" -}}
+- name: get-auto-encrypt-client-ca
+  image: {{ .Values.global.imageK8S }}
+  command:
+    - "/bin/sh"
+    - "-ec"
+    - |
+      consul-k8s get-consul-client-ca \
+        -output-file=/consul/tls/client/ca/tls.crt \
+        {{- if .Values.externalServers.enabled }}
+        {{- if and .Values.externalServers.enabled (not .Values.externalServers.hosts) }}{{ fail "externalServers.hosts must be set if externalServers.enabled is true" }}{{ end -}}
+        -server-addr={{ quote (first .Values.externalServers.hosts) }} \
+        -server-port={{ .Values.externalServers.httpsPort }} \
+        {{- if .Values.externalServers.tlsServerName }}
+        -tls-server-name={{ .Values.externalServers.tlsServerName }} \
+        {{- end }}
+        {{- if not .Values.externalServers.useSystemRoots }}
+        -ca-file=/consul/tls/ca/tls.crt
+        {{- end }}
+        {{- else }}
+        -server-addr={{ template "consul.fullname" . }}-server \
+        -server-port=8501 \
+        -ca-file=/consul/tls/ca/tls.crt
+        {{- end }}
+  volumeMounts:
+    {{- if not (and .Values.externalServers.enabled .Values.externalServers.useSystemRoots) }}
+    - name: consul-ca-cert
+      mountPath: /consul/tls/ca
+    {{- end }}
+    - name: consul-auto-encrypt-ca-cert
+      mountPath: /consul/tls/client/ca
 {{- end -}}

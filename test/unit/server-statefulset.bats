@@ -43,6 +43,20 @@ load _helpers
 }
 
 #--------------------------------------------------------------------
+# retry-join
+
+@test "server/StatefulSet: retry join gets populated" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'server.replicas=3' \
+      . | tee /dev/stderr |
+      yq -r '.spec.template.spec.containers[0].command | any(contains("-retry-join"))' | tee /dev/stderr)
+
+  [ "${actual}" = "true" ]
+}
+
+#--------------------------------------------------------------------
 # image
 
 @test "server/StatefulSet: image defaults to global.image" {
@@ -244,6 +258,20 @@ load _helpers
   [ "${actual}" = "1" ]
 }
 
+@test "server/StatefulSet: adds extra secret volume with items" {
+  cd `chart_dir`
+
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'server.extraVolumes[0].type=secret' \
+      --set 'server.extraVolumes[0].name=foo' \
+      --set 'server.extraVolumes[0].items[0].key=key' \
+      --set 'server.extraVolumes[0].items[0].path=path' \
+      . | tee /dev/stderr |
+      yq -c '.spec.template.spec.volumes[] | select(.name == "userconfig-foo")' | tee /dev/stderr)
+  [ "${actual}" = "{\"name\":\"userconfig-foo\",\"secret\":{\"secretName\":\"foo\",\"items\":[{\"key\":\"key\",\"path\":\"path\"}]}}" ]
+}
+
 #--------------------------------------------------------------------
 # affinity
 
@@ -366,18 +394,6 @@ load _helpers
   [ "${actual}" = "" ]
 }
 
-@test "server/StatefulSet: gossip encryption disabled in server StatefulSet when servers are disabled" {
-  cd `chart_dir`
-  local actual=$(helm template \
-      -x templates/enterprise-license.yaml  \
-      --set 'server.enabled=false' \
-      --set 'global.gossipEncryption.secretName=foo' \
-      --set 'global.gossipEncryption.secretKey=bar' \
-      . | tee /dev/stderr |
-      yq 'length > 0' | tee /dev/stderr)
-  [ "${actual}" = "false" ]
-}
-
 @test "server/StatefulSet: gossip encryption disabled in server StatefulSet when secretName is missing" {
   cd `chart_dir`
   local actual=$(helm template \
@@ -456,4 +472,319 @@ load _helpers
   local actual=$(echo $object |
       yq -r '.[3].value' | tee /dev/stderr)
   [ "${actual}" = "custom_no_proxy" ]
+}
+
+#--------------------------------------------------------------------
+# global.tls.enabled
+
+@test "server/StatefulSet: CA volume present when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name == "consul-ca-cert")' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: server volume present when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name == "consul-server-cert")' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: CA volume mounted when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].volumeMounts[] | select(.name == "consul-ca-cert")' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: server certificate volume mounted when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].volumeMounts[] | select(.name == "consul-server-cert")' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: port 8501 is not exposed when TLS is disabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=false' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].ports[] | select (.containerPort == 8501)' | tee /dev/stderr)
+  [ "${actual}" == "" ]
+}
+
+@test "server/StatefulSet: port 8501 is exposed when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].ports[] | select (.containerPort == 8501)' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: port 8500 is still exposed when httpsOnly is not enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.httpsOnly=false' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].ports[] | select (.containerPort == 8500)' | tee /dev/stderr)
+  [ "${actual}" != "" ]
+}
+
+@test "server/StatefulSet: port 8500 is not exposed when httpsOnly is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.httpsOnly=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].ports[] | select (.containerPort == 8500)' | tee /dev/stderr)
+  [ "${actual}" == "" ]
+}
+
+@test "server/StatefulSet: readiness checks are over HTTP when TLS is disabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=false' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].readinessProbe.exec.command | join(" ") | contains("http://127.0.0.1:8500")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: readiness checks are over HTTPS when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].readinessProbe.exec.command | join(" ") | contains("https://127.0.0.1:8501")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: CA certificate is specified when TLS is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].readinessProbe.exec.command | join(" ") | contains("--cacert /consul/tls/ca/tls.crt")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: HTTP is disabled in agent when httpsOnly is enabled" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.httpsOnly=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ") | contains("ports { http = -1 }")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: sets Consul environment variables when global.tls.enabled" {
+  cd `chart_dir`
+  local env=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq -r '.spec.template.spec.containers[0].env[]' | tee /dev/stderr)
+
+  local actual
+  actual=$(echo $env | jq -r '. | select(.name == "CONSUL_HTTP_ADDR") | .value' | tee /dev/stderr)
+  [ "${actual}" = "https://localhost:8501" ]
+
+  actual=$(echo $env | jq -r '. | select(.name == "CONSUL_CACERT") | .value' | tee /dev/stderr)
+    [ "${actual}" = "/consul/tls/ca/tls.crt" ]
+}
+
+@test "server/StatefulSet: sets verify_* flags to true by default when global.tls.enabled" {
+  cd `chart_dir`
+  local command=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ")' | tee /dev/stderr)
+
+  local actual
+  actual=$(echo $command | jq -r '. | contains("verify_incoming_rpc = true")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+
+  actual=$(echo $command | jq -r '. | contains("verify_outgoing = true")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+
+  actual=$(echo $command | jq -r '. | contains("verify_server_hostname = true")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: doesn't set the verify_* flags by default when global.tls.enabled and global.tls.verify is false" {
+  cd `chart_dir`
+  local command=$(helm template \
+      -x templates/server-statefulset.yaml \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.verify=false' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ")' | tee /dev/stderr)
+
+  local actual
+  actual=$(echo $command | jq -r '. | contains("verify_incoming_rpc = true")' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+
+  actual=$(echo $command | jq -r '. | contains("verify_outgoing = true")' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+
+  actual=$(echo $command | jq -r '. | contains("verify_server_hostname = true")' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+}
+
+@test "server/StatefulSet: can overwrite CA secret with the provided one" {
+  cd `chart_dir`
+  local ca_cert_volume=$(helm template \
+      -x templates/server-statefulset.yaml \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.caCert.secretName=foo-ca-cert' \
+      --set 'global.tls.caCert.secretKey=key' \
+      --set 'global.tls.caKey.secretName=foo-ca-key' \
+      --set 'global.tls.caKey.secretKey=key' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.volumes[] | select(.name=="consul-ca-cert")' | tee /dev/stderr)
+
+  # check that the provided ca cert secret is attached as a volume
+  local actual
+  actual=$(echo $ca_cert_volume | jq -r '.secret.secretName' | tee /dev/stderr)
+  [ "${actual}" = "foo-ca-cert" ]
+
+  # check that the volume uses the provided secret key
+  actual=$(echo $ca_cert_volume | jq -r '.secret.items[0].key' | tee /dev/stderr)
+  [ "${actual}" = "key" ]
+}
+
+#--------------------------------------------------------------------
+# global.federation.enabled
+
+@test "server/StatefulSet: mesh gateway federation enabled when federation.enabled=true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.federation.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ") | contains("connect { enable_mesh_gateway_wan_federation = true }")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: mesh gateway federation not enabled when federation.enabled=false" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.federation.enabled=false' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ") | contains("connect { enable_mesh_gateway_wan_federation = true }")' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+}
+
+#--------------------------------------------------------------------
+# global.acls.replicationToken
+
+@test "server/StatefulSet: acl replication token config is not set by default" {
+  cd `chart_dir`
+  local object=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      . | tee /dev/stderr)
+
+  # Test the flag is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].command | any(contains("ACL_REPLICATION_TOKEN"))' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+
+  # Test the ACL_REPLICATION_TOKEN environment variable is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].env | map(select(.name == "ACL_REPLICATION_TOKEN")) | length == 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: acl replication token config is not set when acls.replicationToken.secretName is set but secretKey is not" {
+  cd `chart_dir`
+  local object=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.acls.replicationToken.secretName=name' \
+      . | tee /dev/stderr)
+
+  # Test the flag is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].command | any(contains("ACL_REPLICATION_TOKEN"))' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+
+  # Test the ACL_REPLICATION_TOKEN environment variable is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].env | map(select(.name == "ACL_REPLICATION_TOKEN")) | length == 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: acl replication token config is not set when acls.replicationToken.secretKey is set but secretName is not" {
+  cd `chart_dir`
+  local object=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.acls.replicationToken.secretKey=key' \
+      . | tee /dev/stderr)
+
+  # Test the flag is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].command | any(contains("ACL_REPLICATION_TOKEN"))' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+
+  # Test the ACL_REPLICATION_TOKEN environment variable is not set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].env | map(select(.name == "ACL_REPLICATION_TOKEN")) | length == 0' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "server/StatefulSet: acl replication token config is set when acls.replicationToken.secretKey and secretName are set" {
+  cd `chart_dir`
+  local object=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.acls.replicationToken.secretName=name' \
+      --set 'global.acls.replicationToken.secretKey=key' \
+      . | tee /dev/stderr)
+
+  # Test the flag is set.
+  local actual=$(echo "$object" |
+    yq '.spec.template.spec.containers[0].command | any(contains("-hcl=\"acl { tokens { agent = \\\"${ACL_REPLICATION_TOKEN}\\\", replication = \\\"${ACL_REPLICATION_TOKEN}\\\" } }\""))' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+
+  # Test the ACL_REPLICATION_TOKEN environment variable is set.
+  local actual=$(echo "$object" |
+    yq -r -c '.spec.template.spec.containers[0].env | map(select(.name == "ACL_REPLICATION_TOKEN"))' | tee /dev/stderr)
+  [ "${actual}" = '[{"name":"ACL_REPLICATION_TOKEN","valueFrom":{"secretKeyRef":{"name":"name","key":"key"}}}]' ]
+}
+
+#--------------------------------------------------------------------
+# global.tls.enableAutoEncrypt
+
+@test "server/StatefulSet: enables auto-encrypt for the servers when global.tls.enableAutoEncrypt is true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/server-statefulset.yaml  \
+      --set 'global.tls.enabled=true' \
+      --set 'global.tls.enableAutoEncrypt=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | join(" ") | contains("auto_encrypt = {allow_tls = true}")' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
 }

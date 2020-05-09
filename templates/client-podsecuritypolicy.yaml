@@ -23,14 +23,33 @@ spec:
     - 'projected'
     - 'secret'
     - 'downwardAPI'
+    {{- if .Values.client.dataDirectoryHostPath }}
+    - 'hostPath'
+    {{- end }}
   hostNetwork: false
   hostPorts:
+  {{- if (not (and .Values.global.tls.enabled .Values.global.tls.httpsOnly)) }}
+  # HTTP Port
   - min: 8500
+    max: 8500
+  {{- end }}
+  {{- if .Values.global.tls.enabled }}
+  # HTTPS port
+  - min: 8501
+    max: 8501
+  {{- end }}
+  {{- if .Values.client.grpc }}
+  # gRPC Port
+  - min: 8502
     max: 8502
+  {{- end }}
+  {{- if .Values.client.exposeGossipPorts }}
+  - min: 8301
+    max: 8301
+  {{- end }}
   hostIPC: false
   hostPID: false
   runAsUser:
-    # Require the container to run without root privileges.
     rule: 'RunAsAny'
   seLinux:
     rule: 'RunAsAny'
@@ -39,4 +58,9 @@ spec:
   fsGroup:
     rule: 'RunAsAny'
   readOnlyRootFilesystem: false
+  {{- if .Values.client.dataDirectoryHostPath }}
+  allowedHostPaths:
+  - pathPrefix: {{ .Values.client.dataDirectoryHostPath | quote }}
+    readOnly: false
+  {{- end }}
 {{- end }}

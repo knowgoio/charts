@@ -1,0 +1,74 @@
+version: 2
+jobs:
+  unit:
+    docker:
+      # This image is built from test/docker/Test.dockerfile
+      - image: hashicorpdev/consul-helm-test:0.3.0
+
+    steps:
+      - checkout
+
+      - run:
+          name: Run Unit Tests
+          command: bats ./test/unit
+
+  acceptance:
+    docker:
+      # This image is build from test/docker/Test.dockerfile
+      - image: hashicorpdev/consul-helm-test:0.3.0
+
+    steps:
+      - checkout
+
+      - run:
+          name: terraform init & apply
+          command: |
+            terraform init test/terraform
+            echo "${GOOGLE_CREDENTIALS}" | gcloud auth activate-service-account --key-file=-
+
+            terraform apply -var project=${CLOUDSDK_CORE_PROJECT} -var init_cli=true -auto-approve test/terraform
+
+      - run:
+          name: Run acceptance tests
+          command: bats ./test/acceptance
+
+      - run:
+          name: terraform destroy
+          command: |
+            terraform destroy -auto-approve
+          when: always
+
+  update-helm-charts-index:
+    docker:
+      - image: circleci/golang:latest
+    steps:
+      - run:
+          name: update helm-charts index
+          command: |
+            curl --show-error --silent --fail --user "${CIRCLE_TOKEN}:" \
+                -X POST \
+                -H 'Content-Type: application/json' \
+                -H 'Accept: application/json' \
+                -d "{\"branch\": \"master\",\"parameters\":{\"SOURCE_REPO\": \"${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}\",\"SOURCE_TAG\": \"${CIRCLE_TAG}\"}}" \
+                "${CIRCLE_ENDPOINT}/${CIRCLE_PROJECT}/pipeline"
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - unit
+      - acceptance:
+          requires:
+            - unit
+          filters:
+            branches:
+              only: master
+  update-helm-charts-index:
+    jobs:
+      - update-helm-charts-index:
+          context: helm-charts-trigger
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

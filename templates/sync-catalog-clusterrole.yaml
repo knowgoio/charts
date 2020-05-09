@@ -18,21 +18,23 @@ rules:
       - get
       - list
       - watch
+{{- if .Values.syncCatalog.toK8S }}
       - update
       - patch
       - delete
       - create
+{{- end }}
   - apiGroups: [""]
     resources:
       - nodes
     verbs:
       - get
-{{- if .Values.global.bootstrapACLs }}
+{{- if (or .Values.global.acls.manageSystemACLs .Values.global.bootstrapACLs) }}
   - apiGroups: [""]
     resources:
       - secrets
     resourceNames:
-      - {{ .Release.Name }}-consul-catalog-sync-acl-token
+      - {{ template "consul.fullname" . }}-catalog-sync-acl-token
     verbs:
       - get
 {{- end }}
