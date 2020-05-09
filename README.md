@@ -19,5 +19,5 @@ Each repository should be added individually:
 
 ```shell script
 $ helm repo add --username <github-username> --password <github-password> \
-    knowgo-helm-<repository> https://raw.githubusercontent.com/pmundt/knowgo-helm-charts/master/repo/<repository>
+    knowgo-helm-<repository> https://raw.githubusercontent.com/knowgoio/knowgo-helm-charts/master/repo/<repository>
 ```
