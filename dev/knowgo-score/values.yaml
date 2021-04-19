@@ -1,0 +1,35 @@
+accelerators:
+  gpu: false
+
+image:
+  repository: eu.gcr.io/knowgo-car-37860447/knowgo-score
+  pullPolicy: IfNotPresent
+  tag: 0.0.3
+
+imagePullSecrets:
+  - name: gcr-secret
+
+labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+
+serviceAccount:
+  create: false
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+resources: {}
+
+autoscaling:
+  enabled: false
+
+nodeSelector: {}
+
+tolerations: []
+
+# Install default RBAC roles and bindings
+rbac:
+  create: false

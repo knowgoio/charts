@@ -1,16 +1,11 @@
 apiVersion: v1
 name: knowgo-score
 description: Official KnowGo Score chart
-version: 0.0.2
-appVersion: 0.0.2
+version: 0.0.3
+appVersion: 0.0.3
 keywords:
   - score
   - knowgo
-dependencies:
-  - name: knowgo-mysql
-    version: 0.0.2
-    enabled: true
-    repository: https://raw.githubusercontent.com/knowgoio/knowgo-helm-charts/master/repo/dev
 maintainers:
   - name: Adaptant Labs
     email: labs@adaptant.io

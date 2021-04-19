@@ -3,7 +3,7 @@ entries:
   knowgo-api-gateway:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.251260291+02:00"
+    created: "2021-04-19T17:26:02.937838665+02:00"
     description: Official KnowGo API Gateway Chart
     digest: 41612b1096d39240a42d880c7ad9ada2357e5fa65b2a4251ecc4e7f3e2be1f49
     keywords:
@@ -16,12 +16,12 @@ entries:
     sources:
     - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-api-gateway-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-api-gateway-0.0.1.tgz
     version: 0.0.1
   knowgo-backend:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.251671028+02:00"
+    created: "2021-04-19T17:26:02.938266534+02:00"
     description: A Helm Chart for deploying the KnowGo platform backend
     digest: 939584ac99b795cdbd73399ca747c8b1209abe27ce829dad870e41ec2192718a
     keywords:
@@ -31,14 +31,14 @@ entries:
     - name: Adaptant Labs
     name: knowgo-backend
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-backend-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-backend-0.0.1.tgz
     version: 0.0.1
   knowgo-mqtt-proxy:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.251870931+02:00"
+    created: "2021-04-19T17:26:02.938486101+02:00"
     description: Official KnowGo MQTT Proxy and Broker
     digest: a2d7642092e6059a8915dac524a806c0157f476f072c401acfad0ebb34121a88
     keywords:
@@ -52,12 +52,12 @@ entries:
     sources:
     - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-mqtt-proxy-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-mqtt-proxy-0.0.1.tgz
     version: 0.0.1
   knowgo-mysql:
   - apiVersion: v1
     appVersion: 0.0.2
-    created: "2020-05-09T14:51:25.252948165+02:00"
+    created: "2021-04-19T17:26:02.939279564+02:00"
     description: A Helm Chart for deploying KnowGo MySQL database instance
     digest: 06cb7cd1c0baa2d579a85cacfdcfe4413761399ef72ffa9ee4ead105f798a6da
     keywords:
@@ -67,13 +67,13 @@ entries:
     - name: Adaptant Labs
     name: knowgo-mysql
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-mysql-0.0.2.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-mysql-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.252432196+02:00"
+    created: "2021-04-19T17:26:02.93869139+02:00"
     description: A Helm Chart for deploying KnowGo MySQL database instance
     digest: daa102078da0eb1859ed91748483da8c46b6228288108ccd8dd9d9e44428f78a
     keywords:
@@ -83,14 +83,29 @@ entries:
     - name: Adaptant Labs
     name: knowgo-mysql
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-mysql-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-mysql-0.0.1.tgz
     version: 0.0.1
   knowgo-score:
   - apiVersion: v1
+    appVersion: 0.0.3
+    created: "2021-04-19T17:26:02.940825589+02:00"
+    description: Official KnowGo Score chart
+    digest: bc86c4368a2c240b986e996261fc487d280e2a7503d4ed5e0a74866229d11472
+    keywords:
+    - score
+    - knowgo
+    maintainers:
+    - email: labs@adaptant.io
+      name: Adaptant Labs
+    name: knowgo-score
+    urls:
+    - https://knowgoio.github.io/charts/dev/knowgo-score-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v1
     appVersion: 0.0.2
-    created: "2020-05-09T14:51:25.253495988+02:00"
+    created: "2021-04-19T17:26:02.940356376+02:00"
     description: Official KnowGo Score chart
     digest: fe34817ee868c5b9d2e249ab609f22d81821fb93dbbcaba3f0328846ce3e8982
     keywords:
@@ -101,11 +116,11 @@ entries:
       name: Adaptant Labs
     name: knowgo-score
     urls:
-    - knowgo-score-0.0.2.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-score-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.253121524+02:00"
+    created: "2021-04-19T17:26:02.9398491+02:00"
     description: Official KnowGo Score chart
     digest: 051cf31c5c626f51c1a3ede6a9dc9b6ea26564049a5ae50c37466d3937e7c66d
     keywords:
@@ -118,12 +133,12 @@ entries:
     sources:
     - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-score-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-score-0.0.1.tgz
     version: 0.0.1
   knowgo-service-registry:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.253645666+02:00"
+    created: "2021-04-19T17:26:02.941064322+02:00"
     description: Official KnowGo Service Registry Chart
     digest: c43d0a4a658b3882826181b96562399a51517c17f4291a32af603c1f44b48f20
     keywords:
@@ -135,12 +150,12 @@ entries:
     sources:
     - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - knowgo-service-registry-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/knowgo-service-registry-0.0.1.tgz
     version: 0.0.1
   licenseplate-recognition:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.253791552+02:00"
+    created: "2021-04-19T17:26:02.941285026+02:00"
     description: A Helm Chart for deploying the licenseplate recognition microservice
     digest: f2b41761b75748207026c9a4943fc878a7ab0b0cf42689a6139bc100218e8c97
     keywords:
@@ -150,14 +165,14 @@ entries:
     - name: Adaptant Labs
     name: licenseplate-recognition
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - licenseplate-recognition-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/licenseplate-recognition-0.0.1.tgz
     version: 0.0.1
   reverse-geocoder:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.25393118+02:00"
+    created: "2021-04-19T17:26:02.94147944+02:00"
     description: A Helm Chart for deploying the reverse geocoder
     digest: 9bdc7ba0aa678860f9d3962d5e5beecde51e92ea009024f7eb80cfb272d4ffb4
     keywords:
@@ -167,14 +182,14 @@ entries:
     - name: Adaptant Labs
     name: reverse-geocoder
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - reverse-geocoder-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/reverse-geocoder-0.0.1.tgz
     version: 0.0.1
   vin-decoder:
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2020-05-09T14:51:25.254086704+02:00"
+    created: "2021-04-19T17:26:02.941680233+02:00"
     description: A Helm Chart for deploying the VIN decoder
     digest: f947e0f18a6b753d68943b74b7dd6e55172f3289414b19ecdf04bc601762d7aa
     keywords:
@@ -184,8 +199,8 @@ entries:
     - name: Adaptant Labs
     name: vin-decoder
     sources:
-    - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
+    - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
     urls:
-    - vin-decoder-0.0.1.tgz
+    - https://knowgoio.github.io/charts/dev/vin-decoder-0.0.1.tgz
     version: 0.0.1
-generated: "2020-05-09T14:51:25.250744304+02:00"
+generated: "2021-04-19T17:26:02.937485936+02:00"

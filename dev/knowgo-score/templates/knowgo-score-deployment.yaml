@@ -14,15 +14,43 @@ spec:
       labels:
         app: knowgo-score
     spec:
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-      - name: regcred
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-      - name: knowgo-score
-        image: adaptant/knowgo-score
-        env:
-        - name: KNOWGO_DB_URI
-          value: "mysql+mysqlconnector://root:root@knowgo-mysql-service/knowgo?auth_plugin=mysql_native_password"
+      - name: {{ .Chart.Name }}
+        {{ if .Values.accelerators.gpu }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}-gpu"
+        {{ else }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        {{ end }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 5000
         imagePullPolicy: Always
+        {{- with .Values.podEnv }}
+        env:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
       restartPolicy: Always
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{ if .Values.accelerators.gpu }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  # k8s-auto-labeller
+                  - key: accelerators/gpu
+                    operator: Exists
+      {{ end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
