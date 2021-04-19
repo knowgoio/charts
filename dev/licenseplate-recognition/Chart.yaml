@@ -6,7 +6,5 @@ appVersion: 0.0.1
 keywords:
   - alpr
   - knowgo
-sources:
-  - https://github.com/pmundt/knowgo-helm-charts/tree/master/dev
 maintainers:
   - name: Adaptant Labs

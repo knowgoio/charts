@@ -6,8 +6,28 @@ appVersion: 0.0.1
 keywords:
   - api gateway
   - knowgo
-sources:
-  - https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+dependencies:
+  - name: opa
+    version: 0.0.1
+    enabled: true
+    repository: https://github.com/knowgoio/knowgo-helm-charts/tree/master/community
+
+  - name: knowgo-mysql
+    version: 0.0.2
+    enabled: true
+    repository: https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+
+  - name: knowgo-mqtt-proxy
+    version: 0.0.1
+    enabled: true
+    repository: https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+
+  - name: knowgo-service-registry
+    version: 0.0.2
+    enabled: true
+    repository: https://github.com/knowgoio/knowgo-helm-charts/tree/master/dev
+
 maintainers:
   - name: Adaptant Labs
     email: labs@adaptant.io
+home: https://www.knowgo.io
